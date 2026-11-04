@@ -3,7 +3,7 @@
 import numpy as np
 def brentq(f,a,b):
     fa=f(a)
-    for _ in range(200):
+    for _ in range(60):
         c=(a+b)/2; fc=f(c)
         if fa*fc<=0: b=c
         else: a,fa=c,fc
@@ -49,10 +49,11 @@ def Z(rho):
     h=rho*1e-6
     return 1+rho*(ares(rho+h)[0]-ares(rho-h)[0])/(2*h)
 def Pcalc(rho): return Z(rho)*rho*1e30*kB*T
-d=s*(1-0.12*np.exp(-3*e/T)); rmax=0.74/(np.pi/6*np.sum(x*m*d**3))
-grid=np.linspace(1e-7,rmax*0.999,4000); f=[Pcalc(r)-P for r in grid]
-roots=[brentq(lambda r:Pcalc(r)-P,grid[i],grid[i+1]) for i in range(len(grid)-1) if f[i]*f[i+1]<0]
-Mm=np.sum(x*M)
-for r in roots:
-    a,X=ares(r); z=Z(r); G=a+z-1-np.log(z)
-    print(f"rho={r*1e30/NA/1e3:.4f} kmol/m3  {r*1e30/NA*Mm/1e6*1e3:.2f} kg/m3  Z={z:.4f}  eta={np.pi/6*r*np.sum(x*m*d**3):.4f}  X={X}  g_res/RT={G:.4f}")
+if __name__ == "__main__":
+    d=s*(1-0.12*np.exp(-3*e/T)); rmax=0.74/(np.pi/6*np.sum(x*m*d**3))
+    grid=np.linspace(1e-7,rmax*0.999,4000); f=[Pcalc(r)-P for r in grid]
+    roots=[brentq(lambda r:Pcalc(r)-P,grid[i],grid[i+1]) for i in range(len(grid)-1) if f[i]*f[i+1]<0]
+    Mm=np.sum(x*M)
+    for r in roots:
+        a,X=ares(r); z=Z(r); G=a+z-1-np.log(z)
+        print(f"rho={r*1e30/NA/1e3:.4f} kmol/m3  {r*1e30/NA*Mm/1e6*1e3:.2f} kg/m3  Z={z:.4f}  eta={np.pi/6*r*np.sum(x*m*d**3):.4f}  X={X}  g_res/RT={G:.4f}")
